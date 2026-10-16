@@ -1,5 +1,11 @@
 #!/bin/bash
-echo "Iniciando automatización total en Linux..."
+echo "Iniciando automatización total modular..."
+
+# 0. Verificar config.json
+if [ ! -f "config.json" ]; then
+    echo "Error: No se encontró config.json"
+    exit 1
+fi
 
 # 1. Instalar dependencias base
 echo "Instalando dependencias base (graphifyy, skillspector)..."
@@ -10,7 +16,13 @@ pipx install --force 'skillspector[mcp] @ git+https://github.com/NVIDIA/skillspe
 mkdir -p .claude
 
 # 3. Generar settings.json
-cat <<EOF > .claude/settings.json
+# Intentamos usar jq si está disponible, si no, usamos el archivo estático por ahora
+if command -v jq &> /dev/null; then
+    echo "Generando settings.json dinámicamente con jq..."
+    jq '{plugins: {enabled: .plugins}, mcpServers: .mcpServers}' config.json > .claude/settings.json
+else
+    echo "Aviso: jq no está instalado. Usando configuración predeterminada."
+    cat <<EOF > .claude/settings.json
 {
   "plugins": {
     "enabled": [
@@ -27,6 +39,7 @@ cat <<EOF > .claude/settings.json
   }
 }
 EOF
+fi
 
 echo "---"
 echo "Configuración base terminada."

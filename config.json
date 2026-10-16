@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    "ponytail",
+    "claude-mem-cowork",
+    "agent-skills"
+  ],
+  "mcpServers": {
+    "skillspector": {
+      "command": "skillspector",
+      "args": ["mcp"]
+    }
+  }
+}
